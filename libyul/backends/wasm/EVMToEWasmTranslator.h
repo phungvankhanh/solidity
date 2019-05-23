@@ -21,16 +21,17 @@
 #pragma once
 
 #include <libyul/AsmDataForward.h>
-#include <libyul/Dialect.h>
 #include <libyul/optimiser/ASTWalker.h>
+#include <libyul/Dialect.h>
 
 namespace yul
 {
+struct Object;
 
 class EVMToEWasmTranslator: public ASTModifier
 {
 public:
-	static void run(Dialect const& _evmDialect, Block& _ast);
+	static void run(Dialect const& _evmDialect, Object& _object);
 
 };
 

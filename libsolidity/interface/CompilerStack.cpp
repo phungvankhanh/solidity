@@ -49,6 +49,11 @@
 #include <libsolidity/codegen/ir/IRGenerator.h>
 
 #include <libyul/YulString.h>
+#include <libyul/backends/wasm/EVMToEWasmTranslator.h>
+#include <libyul/backends/wasm/EWasmObjectCompiler.h>
+#include <libyul/backends/wasm/WasmDialect.h>
+#include <libyul/backends/evm/EVMDialect.h>
+#include <libyul/AssemblyStack.h>
 
 #include <liblangutil/Scanner.h>
 #include <liblangutil/SemVerHandler.h>
@@ -969,6 +974,19 @@ void CompilerStack::generateIR(ContractDefinition const& _contract)
 
 	IRGenerator generator(m_evmVersion, m_optimiserSettings);
 	tie(compiledContract.yulIR, compiledContract.yulIROptimized) = generator.run(_contract);
+
+	{
+		yul::AssemblyStack yulStack(m_evmVersion, yul::AssemblyStack::Language::StrictAssembly, m_optimiserSettings);
+		yulStack.parseAndAnalyze("", compiledContract.yulIROptimized);
+
+		// Modifes in-place, probably not a good idea.
+		yul::EVMToEWasmTranslator::run(yul::EVMDialect::strictAssemblyForEVMObjects(m_evmVersion), *yulStack.parserResult());
+		yul::AssemblyStack ewasmStack(m_evmVersion, yul::AssemblyStack::Language::EWasm, m_optimiserSettings);
+		// Hack!
+		ewasmStack.parseAndAnalyze("", "{}");
+		*ewasmStack.parserResult() = std::move(*yulStack.parserResult());
+		cout << ewasmStack.assemble(yul::AssemblyStack::Machine::eWasm).assembly << endl;
+	}
 }
 
 CompilerStack::Contract const& CompilerStack::contract(string const& _contractName) const
