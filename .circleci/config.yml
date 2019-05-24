@@ -104,7 +104,7 @@ defaults:
 
   - test_ubuntu1904: &test_ubuntu1904
       docker:
-        - image: trapni/solc-buildpack-deps:ubuntu1904
+        - image: ethereum/solidity-buildpack-deps:ubuntu1904
       steps: *test_steps
 
   - test_asan: &test_asan
@@ -196,7 +196,7 @@ jobs:
 
   b_ubu: &build_ubuntu1904
     docker:
-      - image: trapni/solc-buildpack-deps:ubuntu1904
+      - image: ethereum/solidity-buildpack-deps:ubuntu1904
     steps:
       - checkout
       - run: *run_build
@@ -275,7 +275,7 @@ jobs:
 
   b_archlinux:
     docker:
-      - image: trapni/solc-buildpack-deps:archlinux
+      - image: ethereum/solidity-buildpack-deps:archlinux
     environment:
       TERM: xterm
     steps:
@@ -373,7 +373,7 @@ jobs:
 
   b_docs:
     docker:
-      - image: trapni/solc-buildpack-deps:ubuntu1904
+      - image: ethereum/solidity-buildpack-deps:ubuntu1904
     steps:
       - checkout
       - run: *setup_prerelease_commit_hash
@@ -386,7 +386,7 @@ jobs:
 
   t_ubu_cli: &t_ubu_cli
     docker:
-      - image: trapni/solc-buildpack-deps:ubuntu1904
+      - image: ethereum/solidity-buildpack-deps:ubuntu1904
     environment:
       TERM: xterm
     steps:
